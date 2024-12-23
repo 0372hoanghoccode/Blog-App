@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   signInStart,
   signInSuccess,
   signInFailure,
 } from '../redux/user/userSlice';
+import OAuth from '../components/OAuth';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -37,8 +39,7 @@ export default function SignIn() {
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data.message));
-      }
-      if (res.ok) {
+      } else {
         dispatch(signInSuccess(data));
         navigate('/');
       }
@@ -48,71 +49,73 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen mt-20">
-      <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
-        {/* left */}
-        <div className="flex-1">
-          <Link to="/" className="font-bold dark:text-white text-4xl">
-            <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Sahand's
-            </span>
-            <span className="dark:text-white">Blog</span>
-          </Link>
-          <p className="text-sm mt-5 text-muted-foreground">
-            This is a demo project. You can sign in with your email and password
-            or with Google.
-          </p>
-        </div>
-
-        {/* right */}
-        <div className="flex-1">
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Your email</Label>
-              <Input 
-                type="email"
-                placeholder="name@company.com"
-                id="email"
-                onChange={handleChange}
-              />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md">
+        <Card className="shadow-lg">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  placeholder="name@example.com"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  type="password"
+                  id="password"
+                  placeholder="••••••••"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <Button
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Your password</Label>
-              <Input 
-                type="password"
-                placeholder="**********"
-                id="password"
-                onChange={handleChange}
-              />
-            </div>
-            <Button 
-              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-          </form>
-          <div className="flex gap-2 text-sm mt-5">
-            <span className="text-muted-foreground">Don't have an account?</span>
-            <Link to="/sign-up" className="text-blue-500 hover:underline">
-              Sign Up
-            </Link>
-          </div>
-          {errorMessage && (
-            <Alert variant="destructive" className="mt-5">
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
-        </div>
+            <OAuth />
+            <p className="mt-4 text-center text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/sign-up" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign Up
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+        {errorMessage && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
 }
+
