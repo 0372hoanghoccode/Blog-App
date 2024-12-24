@@ -1,4 +1,11 @@
-import React, { useState } from "react";
+'use client'
+
+import React from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useLocation } from "react-router-dom";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { AiOutlineSearch, AiOutlineMenu } from "react-icons/ai";
+import { toggleTheme } from '../redux/theme/themeSlice';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -6,19 +13,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Link, useLocation } from "react-router-dom";
-import { AiOutlineSearch, AiOutlineMenu } from "react-icons/ai";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Header() {
   const path = useLocation().pathname;
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -27,14 +30,14 @@ export default function Header() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b-2 bg-white dark:bg-gray-800 transition-colors duration-300">
+    <nav className="sticky top-0 z-50 border-b-2 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link
             to="/"
-            className="text-xl font-semibold text-gray-900 dark:text-white transition-colors duration-300"
+            className="text-xl font-semibold text-foreground"
           >
-            <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 rounded-lg text-white">
+            <span className="px-2 py-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 rounded-lg text-primary-foreground">
               Hoàng
             </span>
             <span className="ml-2">Blog</span>
@@ -69,23 +72,40 @@ export default function Header() {
             </Button>
 
             <Button
-              variant="ghost"
+              className="w-10 h-10 rounded-full"
+              variant="outline"
               size="icon"
-              onClick={toggleDarkMode}
-              aria-label="Toggle dark mode"
+              onClick={() => dispatch(toggleTheme())}
             >
-              {isDarkMode ? (
-                <FaSun className="h-5 w-5" />
-              ) : (
-                <FaMoon className="h-5 w-5" />
-              )}
+              {theme === 'light' ? <FaMoon className="h-4 w-4" /> : <FaSun className="h-4 w-4" />}
             </Button>
 
-            <Link to="/sign-in">
-              <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white transition-all duration-300 hover:from-purple-600 hover:to-blue-600">
-                Sign In
+            {currentUser ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage src={currentUser.profilePicture} alt="@shadcn" />
+                    <AvatarFallback>{currentUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium">@{currentUser.username}</p>
+                    <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard?tab=profile" className="w-full">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Sign out</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild variant="default">
+                <Link to="/sign-in">Sign In</Link>
               </Button>
-            </Link>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -100,7 +120,7 @@ export default function Header() {
                       to={item.path}
                       className={`w-full px-2 py-2 ${
                         path === item.path
-                          ? "bg-gray-100 dark:bg-gray-700"
+                          ? "bg-accent"
                           : ""
                       }`}
                     >
@@ -119,8 +139,8 @@ export default function Header() {
                 to={item.path}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
                   path === item.path
-                    ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
                 {item.label}
