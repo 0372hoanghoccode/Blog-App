@@ -15,7 +15,6 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
   const [user, setUser] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
-  console.log(user);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {

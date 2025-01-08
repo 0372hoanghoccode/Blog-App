@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  FaUser, 
-  FaSignOutAlt, 
-  FaFileAlt, 
-  FaUsers 
-} from 'react-icons/fa';
+import {
+  HiUser,
+  HiDocumentText,
+  HiOutlineUserGroup,
+  HiAnnotation,
+  HiChartPie,
+  HiLogout
+} from 'react-icons/hi';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -45,23 +47,37 @@ export default function DashSidebar() {
   const navItems = [
     {
       label: `${currentUser.isAdmin ? 'Admin' : 'User'} Profile`,
-      icon: FaUser,
+      icon: HiUser,
       href: '/dashboard?tab=profile',
       tab: 'profile',
       show: true
     },
     {
       label: 'Posts',
-      icon: FaFileAlt,
+      icon: HiDocumentText,
       href: '/dashboard?tab=posts',
       tab: 'posts',
       show: currentUser.isAdmin
     },
     {
       label: 'Users',
-      icon: FaUsers,
+      icon: HiOutlineUserGroup,
       href: '/dashboard?tab=users',
       tab: 'users',
+      show: currentUser.isAdmin
+    },
+    {
+      label: 'Comments',
+      icon: HiAnnotation,
+      href: '/dashboard?tab=comments',
+      tab: 'comments',
+      show: currentUser.isAdmin
+    },
+    {
+      label: 'Dashboard',
+      icon: HiChartPie,
+      href: '/dashboard?tab=dash',
+      tab: 'dash',
       show: currentUser.isAdmin
     }
   ];
@@ -89,7 +105,7 @@ export default function DashSidebar() {
             className="w-full justify-start cursor-pointer"
             onClick={handleSignout}
           >
-            <FaSignOutAlt className="mr-2 h-4 w-4" />
+            <HiLogout className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
         </div>
