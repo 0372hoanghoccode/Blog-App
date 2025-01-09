@@ -1,6 +1,6 @@
-import React from "react";
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaMoon, FaSun } from "react-icons/fa";
 import { AiOutlineSearch, AiOutlineMenu } from "react-icons/ai";
 import { toggleTheme } from '../redux/theme/themeSlice';
@@ -16,24 +16,36 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signoutSuccess } from '../redux/user/userSlice';
 
+const SIGNOUT_API_URL = '/api/user/signout';
+
 export default function Header() {
   const path = useLocation().pathname;
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
+
   const handleSignout = async () => {
     try {
-      const res = await fetch('/api/user/signout', {
-        method: 'POST',
-      });
+      const res = await fetch(SIGNOUT_API_URL, { method: 'POST' });
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        console.error(data.message);
       } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   };
 
@@ -43,26 +55,32 @@ export default function Header() {
     { path: "/projects", label: "Projects" },
   ];
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('searchTerm', searchTerm);
+    navigate(`/search?${urlParams.toString()}`);
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b-2 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link
-            to="/"
-            className="text-xl font-semibold text-foreground"
-          >
+          <Link to="/" className="text-xl font-semibold text-foreground">
             <span className="px-2 py-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 rounded-lg text-primary-foreground">
               Hoàng
             </span>
             <span className="ml-2">Blog</span>
           </Link>
 
-          <form className="hidden lg:flex items-center">
+          <form onSubmit={handleSubmit} className="hidden lg:flex items-center">
             <div className="relative">
               <Input
                 type="text"
                 placeholder="Search..."
                 className="w-64 pr-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Button
                 type="submit"
@@ -133,9 +151,7 @@ export default function Header() {
                     <Link
                       to={item.path}
                       className={`w-full px-2 py-2 ${
-                        path === item.path
-                          ? "bg-accent"
-                          : ""
+                        path === item.path ? "bg-accent" : ""
                       }`}
                     >
                       {item.label}
@@ -166,4 +182,3 @@ export default function Header() {
     </nav>
   );
 }
-
