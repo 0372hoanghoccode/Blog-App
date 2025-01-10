@@ -1,5 +1,6 @@
 import Post from '../models/post.model.js';
 import { errorHandler } from '../utils/error.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 
 export const create = async (req, res, next) => {
   if (!req.user.isAdmin) {
@@ -8,19 +9,79 @@ export const create = async (req, res, next) => {
   if (!req.body.title || !req.body.content) {
     return next(errorHandler(400, 'Please provide all required fields'));
   }
-  const slug = req.body.title
-    .split(' ')
-    .join('-')
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9-]/g, '');
-  const newPost = new Post({
-    ...req.body,
-    slug,
-    userId: req.user.id,
-  });
+
   try {
+    let imageUrl = '';
+    if (req.body.image) {
+      const uploadResponse = await uploadImage(req.body.image);
+      imageUrl = uploadResponse.secure_url;
+    }
+
+    const slug = req.body.title
+      .split(' ')
+      .join('-')
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9-]/g, '');
+
+    const newPost = new Post({
+      ...req.body,
+      image: imageUrl,
+      slug,
+      userId: req.user.id,
+    });
+
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatepost = async (req, res, next) => {
+  try {
+    // Check user permissions
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+      return next(errorHandler(403, 'You are not allowed to update this post'));
+    }
+
+    // Find the post
+    const post = await Post.findById(req.params.postId);
+    if (!post) {
+      return next(errorHandler(404, 'Post not found'));
+    }
+
+    // Prepare update data
+    const updateData = {
+      title: req.body.title,
+      content: req.body.content,
+      category: req.body.category || 'uncategorized', // Ensure category has a default value
+    };
+
+    // Handle image update if provided
+    if (req.body.image) {
+      try {
+        // Delete old image if exists
+        if (post.image) {
+          const publicId = post.image.split('/').pop().split('.')[0];
+          await deleteImage(publicId);
+        }
+        // Upload new image
+        const uploadResponse = await uploadImage(req.body.image);
+        updateData.image = uploadResponse.secure_url;
+      } catch (error) {
+        console.error('Error handling image:', error);
+        return next(errorHandler(500, 'Error uploading image'));
+      }
+    }
+
+    // Update the post
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.postId,
+      { $set: updateData },
+      { new: true, runValidators: true } // Add runValidators to ensure category validation
+    );
+
+    res.status(200).json(updatedPost);
   } catch (error) {
     next(error);
   }
@@ -78,25 +139,3 @@ export const deletepost = async (req, res, next) => {
   }
 };
 
-export const updatepost = async (req, res, next) => {
-  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-    return next(errorHandler(403, 'You are not allowed to update this post'));
-  }
-  try {
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.postId,
-      {
-        $set: {
-          title: req.body.title,
-          content: req.body.content,
-          category: req.body.category,
-          image: req.body.image,
-        },
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedPost);
-  } catch (error) {
-    next(error);
-  }
-};

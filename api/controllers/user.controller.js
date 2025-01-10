@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 
 export const test = (req, res) => {
     res.json({ message: 'API is working!' });
@@ -10,12 +11,33 @@ export const test = (req, res) => {
     if (req.user.id !== req.params.userId) {
       return next(errorHandler(403, 'You are not allowed to update this user'));
     }
-    if (req.body.password) {
-      if (req.body.password.length < 6) {
-        return next(errorHandler(400, 'Password must be at least 6 characters'));
+  
+    try {
+      let profilePictureUrl = req.body.profilePicture;
+      
+      if (req.body.newProfilePicture) {
+        const user = await User.findById(req.params.userId);
+        // Chỉ xóa ảnh cũ nếu có và không phải ảnh mặc định
+        if (user.profilePicture && !user.profilePicture.includes('default-profile')) {
+          try {
+            const publicId = user.profilePicture.split('/').pop().split('.')[0];
+            await deleteImage(publicId);
+          } catch (error) {
+            console.log('Error deleting old image:', error);
+          }
+          // Upload ảnh mới
+          const uploadResponse = await uploadImage(req.body.newProfilePicture);
+          profilePictureUrl = uploadResponse.secure_url;
+
+        }
       }
-      req.body.password = bcryptjs.hashSync(req.body.password, 10);
-    }
+  
+      if (req.body.password) {
+        if (req.body.password.length < 6) {
+          return next(errorHandler(400, 'Password must be at least 6 characters'));
+        }
+        req.body.password = bcryptjs.hashSync(req.body.password, 10);
+      }
     if (req.body.username) {
       if (req.body.username.length < 7 || req.body.username.length > 20) {
         return next(
@@ -34,21 +56,24 @@ export const test = (req, res) => {
         );
       }
     }
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.userId,
-        {
-          $set: {
-            username: req.body.username,
-            email: req.body.email,
-            profilePicture: req.body.profilePicture,
-            password: req.body.password,
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.params.userId,
+          {
+            $set: {
+              username: req.body.username,
+              email: req.body.email,
+              profilePicture: profilePictureUrl,
+              password: req.body.password,
+            },
           },
-        },
-        { new: true }
-      );
-      const { password, ...rest } = updatedUser._doc;
-      res.status(200).json(rest);
+          { new: true }
+        );
+        const { password, ...rest } = updatedUser._doc;
+        res.status(200).json(rest);
+      } catch (error) {
+        next(error);
+      }
     } catch (error) {
       next(error);
     }

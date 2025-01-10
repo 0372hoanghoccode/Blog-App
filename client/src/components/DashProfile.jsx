@@ -1,16 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import { app } from '../firebase';
 
-// shadcn components
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
@@ -24,7 +16,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// redux actions
 import {
   updateStart,
   updateSuccess,
@@ -53,6 +44,10 @@ export default function DashProfile() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setImageFileUploadError('File must be less than 2MB');
+        return;
+      }
       setImageFile(file);
       setImageFileUrl(URL.createObjectURL(file));
     }
@@ -67,32 +62,41 @@ export default function DashProfile() {
   const uploadImage = async () => {
     setImageFileUploading(true);
     setImageFileUploadError(null);
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + imageFile.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, imageFile);
     
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setImageFileUploadProgress(progress.toFixed(0));
-      },
-      (error) => {
-        setImageFileUploadError('Could not upload image (File must be less than 2MB)');
-        setImageFileUploadProgress(null);
-        setImageFile(null);
-        setImageFileUrl(null);
-        setImageFileUploading(false);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageFileUrl(downloadURL);
-          setFormData({ ...formData, profilePicture: downloadURL });
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      reader.onload = async () => {
+        try {
+          const res = await fetch('/api/user/update/' + currentUser._id, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              newProfilePicture: reader.result // Gửi base64 string của ảnh
+            }),
+          });
+          const data = await res.json();
+          
+          if (!res.ok) {
+            setImageFileUploadError(data.message);
+            setImageFileUploading(false);
+            return;
+          }
+  
+          setImageFileUrl(data.profilePicture); // Lấy URL từ response
+          setFormData({ ...formData, profilePicture: data.profilePicture });
           setImageFileUploading(false);
-        });
-      }
-    );
+        } catch (error) {
+          setImageFileUploadError('Không thể upload ảnh');
+          setImageFileUploading(false);
+        }
+      };
+    } catch (error) {
+      setImageFileUploadError('Không thể đọc file ảnh');
+      setImageFileUploading(false);
+    }
   };
 
   const handleChange = (e) => {

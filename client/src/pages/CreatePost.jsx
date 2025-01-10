@@ -1,87 +1,84 @@
 import { useState } from 'react';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import { app } from '../firebase';
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function CreatePost() {
-  const [file, setFile] = useState(null);
-  const [imageUploadProgress, setImageUploadProgress] = useState(null);
-  const [imageUploadError, setImageUploadError] = useState(null);
-  const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    category: 'uncategorized',
+    image: ''
+  });
   const navigate = useNavigate();
 
-  const handleUpdloadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError('Please select an image');
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setUploadError('File must be less than 2MB');
         return;
       }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + '-' + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        (error) => {
-          setImageUploadError('Image upload failed');
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError('Image upload failed');
-      setImageUploadProgress(null);
-      console.log(error);
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setUploadError(null);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setUploadError(null);
+
     try {
+      // Convert image file to base64 if exists
+      let imageData = '';
+      if (imageFile) {
+        imageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(imageFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+      }
+
+      // Send request with image data
       const res = await fetch('/api/post/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          image: imageData
+        }),
       });
+
       const data = await res.json();
+      
       if (!res.ok) {
-        setPublishError(data.message);
-        return;
+        throw new Error(data.message || 'Something went wrong');
       }
-      if (res.ok) {
-        setPublishError(null);
-        navigate(`/post/${data.slug}`);
-      }
+
+      navigate(`/post/${data.slug}`);
     } catch (error) {
-      setPublishError('Something went wrong');
+      setUploadError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,62 +96,52 @@ export default function CreatePost() {
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
+            value={formData.title}
           />
           <Select
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
+            value={formData.category}
+            onValueChange={(value) =>
+              setFormData({ ...formData, category: value })
             }
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='uncategorized'>Select a category</SelectItem>
-              <SelectItem value='javascript'>JavaScript</SelectItem>
-              <SelectItem value='reactjs'>React.js</SelectItem>
-              <SelectItem value='nextjs'>Next.js</SelectItem>
+              <SelectItem value="uncategorized">Select a category</SelectItem>
+              <SelectItem value="javascript">JavaScript</SelectItem>
+              <SelectItem value="reactjs">React.js</SelectItem>
+              <SelectItem value="nextjs">Next.js</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
         <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
           <Input
             type='file'
             accept='image/*'
-            onChange={(e) => setFile(e.target.files[0])}
-            className="flex-1"
+            onChange={handleImageChange}
+            className="cursor-pointer"
           />
-          <Button
-            variant="outline"
-            size='sm'
-            onClick={handleUpdloadImage}
-            disabled={imageUploadProgress}
-          >
-            {imageUploadProgress ? (
-              <div className='w-16 h-16'>
-                <CircularProgressbar
-                  value={imageUploadProgress}
-                  text={`${imageUploadProgress || 0}%`}
-                />
-              </div>
-            ) : (
-              'Upload Image'
-            )}
-          </Button>
         </div>
-        {imageUploadError && (
+
+        {uploadError && (
           <Alert variant="destructive">
-            <AlertDescription>{imageUploadError}</AlertDescription>
+            <AlertDescription>{uploadError}</AlertDescription>
           </Alert>
         )}
-        {formData.image && (
+
+        {imagePreview && (
           <img
-            src={formData.image}
-            alt='upload'
+            src={imagePreview}
+            alt='upload preview'
             className='w-full h-72 object-cover'
           />
         )}
+
         <ReactQuill
           theme='snow'
+          value={formData.content}
           placeholder='Write something...'
           className='h-72 mb-12'
           required
@@ -162,14 +149,14 @@ export default function CreatePost() {
             setFormData({ ...formData, content: value });
           }}
         />
-        <Button type='submit'>
-          Publish
+
+        <Button 
+          type='submit'
+          disabled={isLoading}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90"
+        >
+          {isLoading ? 'Publishing...' : 'Publish'}
         </Button>
-        {publishError && (
-          <Alert className='mt-5' color='failure'>
-            {publishError}
-          </Alert>
-        )}
       </form>
     </div>
   );

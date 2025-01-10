@@ -29,6 +29,8 @@ app.listen(3000, () => {
   console.log('Server is running on port 3000!');
 });
 
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
