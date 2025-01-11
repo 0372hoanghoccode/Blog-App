@@ -1,25 +1,51 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from 'lucide-react';
+
+function truncateHTML(html, maxLength) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const text = div.textContent || div.innerText || '';
+  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+}
 
 export default function PostCard({ post }) {
+  const truncatedContent = truncateHTML(post.content, 100);
+
   return (
-    <div className='group relative w-full border border-teal-500 hover:border-2 h-[400px] overflow-hidden rounded-lg sm:w-[430px] transition-all'>
-      <Link to={`/post/${post.slug}`}>
-        <img
-          src={post.image}
-          alt='post cover'
-          className='h-[260px] w-full  object-cover group-hover:h-[200px] transition-all duration-300 z-20'
-        />
+    <Card className="overflow-hidden transition-all hover:shadow-lg">
+      <Link to={`/post/${post.slug}`} className="block overflow-hidden">
+        <CardHeader className="p-0">
+          <div className="relative h-[260px] overflow-hidden">
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </div>
+        </CardHeader>
       </Link>
-      <div className='p-3 flex flex-col gap-2'>
-        <p className='text-lg font-semibold line-clamp-2'>{post.title}</p>
-        <span className='italic text-sm'>{post.category}</span>
-        <Link
-          to={`/post/${post.slug}`}
-          className='z-10 group-hover:bottom-0 absolute bottom-[-200px] left-0 right-0 border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white transition-all duration-300 text-center py-2 rounded-md !rounded-tl-none m-2'
-        >
-          Read article
-        </Link>
-      </div>
-    </div>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <Badge variant="secondary">{post.category}</Badge>
+        </div>
+        <h3 className="text-lg font-semibold line-clamp-2 mb-2">{post.title}</h3>
+        <div className="text-sm text-muted-foreground line-clamp-3">
+          {truncatedContent}
+        </div>
+      </CardContent>
+      <CardFooter className="p-4 pt-0 flex items-center justify-between">
+        <Button asChild variant="ghost" size="sm" className="ml-auto">
+          <Link to={`/post/${post.slug}`} className="flex items-center">
+            Read  <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
+

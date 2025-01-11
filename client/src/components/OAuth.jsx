@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from "@/components/ui/button"
 import { AiFillGoogleCircle } from 'react-icons/ai'
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth'
@@ -39,10 +40,11 @@ export default function OAuth() {
         <Button 
             variant="outline" 
             onClick={handleGoogleClick}
-            className="w-full bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
+            className="w-full bg-white text-gray-700 border border-gray-300 transition-all duration-300"
         >
             <AiFillGoogleCircle className="w-5 h-5 mr-2 text-red-500" />
             Continue with Google
         </Button>
     )
 }
+
