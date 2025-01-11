@@ -30,8 +30,21 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/category/get');
+        const data = await res.json();
+        if (res.ok) {
+          setCategories(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
     const fetchPosts = async () => {
       try {
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
@@ -46,10 +59,13 @@ export default function DashPosts() {
         console.log(error.message);
       }
     };
+
     if (currentUser.isAdmin) {
+      fetchCategories();
       fetchPosts();
     }
   }, [currentUser._id]);
+
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
@@ -94,6 +110,11 @@ export default function DashPosts() {
   if (!currentUser.isAdmin) {
     return <div className="p-4 text-center text-gray-500">You don't have permission to view this page.</div>;
   }
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat._id === categoryId);
+    return category ? category.name : 'Uncategorized';
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -147,10 +168,10 @@ export default function DashPosts() {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs">
-                        {post.category}
-                      </Badge>
-                    </TableCell>
+        <Badge variant="secondary" className="bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs">
+          {getCategoryName(post.category)}
+        </Badge>
+      </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Link to={`/update-post/${post._id}`}>

@@ -21,8 +21,9 @@ const postSchema = new mongoose.Schema(
         'https://www.hostinger.com/tutorials/wp-content/uploads/sites/2/2021/09/how-to-write-a-blog-post.png',
     },
     category: {
-      type: String,
-      default: 'uncategorized',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
     },
     slug: {
       type: String,
@@ -34,5 +35,4 @@ const postSchema = new mongoose.Schema(
 );
 
 const Post = mongoose.model('Post', postSchema);
-
 export default Post;

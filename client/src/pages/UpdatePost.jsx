@@ -19,16 +19,32 @@ export default function UpdatePost() {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    category: 'uncategorized',
+    category: '',
     image: ''
   });
   const [publishError, setPublishError] = useState(null);
   const { postId } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/category/get');
+        const data = await res.json();
+        if (res.ok) {
+          setCategories(data);
+        }
+      } catch (error) {
+        console.log('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -43,7 +59,7 @@ export default function UpdatePost() {
           setPublishError(null);
           setFormData({
             ...data.posts[0],
-            category: data.posts[0].category || 'uncategorized'
+            category: data.posts[0].category || ''
           });
           setImageFileUrl(data.posts[0].image);
         }
@@ -160,7 +176,6 @@ export default function UpdatePost() {
             value={formData.title || ''}
           />
           <Select
-            defaultValue={formData.category}
             value={formData.category}
             onValueChange={(value) =>
               setFormData({ ...formData, category: value })
@@ -170,10 +185,11 @@ export default function UpdatePost() {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="uncategorized">Uncategorized</SelectItem>
-              <SelectItem value="javascript">JavaScript</SelectItem>
-              <SelectItem value="reactjs">React.js</SelectItem>
-              <SelectItem value="nextjs">Next.js</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

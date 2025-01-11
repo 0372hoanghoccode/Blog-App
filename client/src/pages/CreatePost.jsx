@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -18,13 +18,36 @@ export default function CreatePost() {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    category: 'uncategorized',
+    category: '',
     image: ''
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/category/get');
+        const data = await res.json();
+        if (res.ok) {
+          setCategories(data);
+          if (data.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              category: data[0]._id
+            }));
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -45,7 +68,6 @@ export default function CreatePost() {
     setUploadError(null);
 
     try {
-      // Convert image file to base64 if exists
       let imageData = '';
       if (imageFile) {
         imageData = await new Promise((resolve, reject) => {
@@ -56,7 +78,6 @@ export default function CreatePost() {
         });
       }
 
-      // Send request with image data
       const res = await fetch('/api/post/create', {
         method: 'POST',
         headers: {
@@ -108,10 +129,11 @@ export default function CreatePost() {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="uncategorized">Select a category</SelectItem>
-              <SelectItem value="javascript">JavaScript</SelectItem>
-              <SelectItem value="reactjs">React.js</SelectItem>
-              <SelectItem value="nextjs">Next.js</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

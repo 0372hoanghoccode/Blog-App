@@ -39,33 +39,28 @@ export const create = async (req, res, next) => {
 
 export const updatepost = async (req, res, next) => {
   try {
-    // Check user permissions
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
       return next(errorHandler(403, 'You are not allowed to update this post'));
     }
 
-    // Find the post
     const post = await Post.findById(req.params.postId);
     if (!post) {
       return next(errorHandler(404, 'Post not found'));
     }
 
-    // Prepare update data
     const updateData = {
       title: req.body.title,
       content: req.body.content,
-      category: req.body.category || 'uncategorized', // Ensure category has a default value
+      category: req.body.category || 'uncategorized',
     };
 
-    // Handle image update if provided
     if (req.body.image) {
       try {
-        // Delete old image if exists
         if (post.image) {
           const publicId = post.image.split('/').pop().split('.')[0];
           await deleteImage(publicId);
         }
-        // Upload new image
+
         const uploadResponse = await uploadImage(req.body.image);
         updateData.image = uploadResponse.secure_url;
       } catch (error) {
@@ -74,11 +69,10 @@ export const updatepost = async (req, res, next) => {
       }
     }
 
-    // Update the post
     const updatedPost = await Post.findByIdAndUpdate(
       req.params.postId,
       { $set: updateData },
-      { new: true, runValidators: true } // Add runValidators to ensure category validation
+      { new: true, runValidators: true }
     );
 
     res.status(200).json(updatedPost);

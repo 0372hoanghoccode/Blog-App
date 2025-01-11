@@ -7,7 +7,8 @@ import {
   HiOutlineUserGroup,
   HiAnnotation,
   HiChartPie,
-  HiLogout
+  HiLogout,
+  HiTag,
 } from 'react-icons/hi';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -57,6 +58,13 @@ export default function DashSidebar() {
       icon: HiDocumentText,
       href: '/dashboard?tab=posts',
       tab: 'posts',
+      show: currentUser.isAdmin
+    },
+    {
+      label: 'Categories',
+      icon: HiTag,
+      href: '/dashboard?tab=categories',
+      tab: 'categories',
       show: currentUser.isAdmin
     },
     {
