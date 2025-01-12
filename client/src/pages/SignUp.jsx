@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import { signInSuccess } from '../redux/user/userSlice';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +16,7 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -27,19 +30,42 @@ export default function SignUp() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch('/api/auth/signup', {
+      
+      // đk nick
+      const signUpRes = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (data.success === false) {
-        return setErrorMessage(data.message);
+      const signUpData = await signUpRes.json();
+      
+      if (signUpData.success === false) {
+        setLoading(false);
+        return setErrorMessage(signUpData.message);
       }
-      setLoading(false);
-      if (res.ok) {
+
+      // auto login sau đk tài khoản
+      const signInRes = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      const signInData = await signInRes.json();
+
+      if (signInData.success === false) {
+        setLoading(false);
+        setErrorMessage('Registration successful but auto login failed. Please sign in manually.');
         navigate('/sign-in');
+        return;
       }
+
+      dispatch(signInSuccess(signInData));
+      setLoading(false);
+      navigate('/');
+      
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
@@ -159,4 +185,3 @@ export default function SignUp() {
     </div>
   );
 }
-

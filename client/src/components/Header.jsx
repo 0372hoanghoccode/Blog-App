@@ -119,7 +119,7 @@ export default function Header() {
                     type="submit"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full"
+                    className="absolute right-0 top-0 h-full "
                   >
                     <Search className="h-4 w-4" />
                   </Button>
