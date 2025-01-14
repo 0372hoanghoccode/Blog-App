@@ -1,21 +1,32 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/vi';
-import { useEffect, useState } from 'react';
-import { FaThumbsUp } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/vi";
+import { useEffect, useState } from "react";
+import {
+  ThumbsUp,
+  Reply as ReplyIcon,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
+  Trash2,
+  MessageCircle,
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import Reply from "./Reply";
 
-// dayjs
 dayjs.extend(relativeTime);
-dayjs.locale('vi');
+dayjs.locale("vi");
 
 export default function Comment({ comment, onLike, onEdit, onDelete }) {
   const [user, setUser] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
   const { currentUser } = useSelector((state) => state.user);
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [replies, setReplies] = useState([]);
+  const [showReplies, setShowReplies] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -40,13 +51,13 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
   const handleSave = async () => {
     try {
       const res = await fetch(`/api/comment/editComment/${comment._id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           content: editedContent,
-        })
+        }),
       });
       if (res.ok) {
         setIsEditing(false);
@@ -57,95 +68,157 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
     }
   };
 
+  const handleLoadReplies = async () => {
+    try {
+      const res = await fetch(`/api/comment/replies/${comment._id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setReplies(data);
+        setShowReplies(!showReplies);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleReplySubmit = (newReply) => {
+    setReplies([newReply, ...replies]);
+    setShowReplyForm(false);
+  };
+
   return (
-    <div className='flex p-4 border-b dark:border-gray-600 text-sm'>
-      <div className='flex-shrink-0 mr-3'>
-        <img
-          className='w-10 h-10 rounded-full bg-gray-200'
-          src={user.profilePicture}
-          alt={user.username}
-        />
-      </div>
-      <div className='flex-1'>
-        <div className='flex items-center mb-1'>
-          <span className='font-bold mr-1 text-xs truncate'>
-            {user ? `@${user.username}` : 'anonymous user'}
-          </span>
-          <span className='text-gray-500 text-xs'>
-            {dayjs(comment.createdAt).fromNow()}
-          </span>
-        </div>
-        {isEditing ? (
-          <>
-            <Textarea
-              className='mb-2'
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
+    <div className="w-full">
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-3 border border-gray-100">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0">
+            <img
+              className="w-10 h-10 rounded-full object-cover border-2 border-gray-100"
+              src={user.profilePicture}
+              alt={user.username}
             />
-            <div className='flex justify-end gap-2 text-xs'>
-              <Button
-                type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
-                onClick={handleSave}
-              >
-                Save
-              </Button>
-              <Button
-                type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
-                outline
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center mb-1 space-x-2">
+              <span className="font-medium text-gray-900">
+                {user ? `@${user.username}` : "anonymous user"}
+              </span>
+              <span className="text-gray-500 text-sm">·</span>
+              <span className="text-gray-500 text-sm">
+                {dayjs(comment.createdAt).fromNow()}
+              </span>
             </div>
-          </>
-        ) : (
-          <>
-            <p className='text-gray-500 pb-2'>{comment.content}</p>
-            <div className='flex items-center pt-2 text-xs border-t dark:border-gray-700 max-w-fit gap-2'>
+
+            {isEditing ? (
+              <div className="space-y-3">
+                <Textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    onClick={() => setIsEditing(false)}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    variant="default"
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-700 mt-2">{comment.content}</div>
+            )}
+
+            <div className="flex items-center mt-4 space-x-4">
               <button
-                type='button'
                 onClick={() => onLike(comment._id)}
-                className={`text-gray-400 hover:text-blue-500 ${
-                  currentUser &&
-                  comment.likes.includes(currentUser._id) &&
-                  '!text-blue-500'
-                }`}
+                className={`flex items-center space-x-1 text-sm ${
+                  currentUser && comment.likes.includes(currentUser._id)
+                    ? "text-blue-500"
+                    : "text-gray-500 hover:text-blue-500"
+                } transition-colors duration-200`}
               >
-                <FaThumbsUp className='text-sm' />
+                <ThumbsUp className="w-4 h-4" />
+                <span>{comment.numberOfLikes || ""}</span>
               </button>
-              <p className='text-gray-400'>
-                {comment.numberOfLikes > 0 &&
-                  comment.numberOfLikes +
-                    ' ' +
-                    (comment.numberOfLikes === 1 ? 'like' : 'likes')}
-              </p>
+
+              <button
+                onClick={() => setShowReplyForm(!showReplyForm)}
+                className="flex items-center space-x-1 text-sm text-gray-500 hover:text-blue-500 transition-colors duration-200"
+              >
+                <ReplyIcon className="w-4 h-4" />
+                <span>Reply</span>
+              </button>
+
               {currentUser &&
                 (currentUser._id === comment.userId || currentUser.isAdmin) && (
                   <>
-                  <button
-                    type='button'
-                    onClick={handleEdit}
-                    className='text-gray-400 hover:text-blue-500'
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => onDelete(comment._id)}
-                    className='text-gray-400 hover:text-red-500'
-                  >
-                    Delete
-                  </button>
-                </>
+                    <button
+                      onClick={handleEdit}
+                      className="flex items-center space-x-1 text-sm text-gray-500 hover:text-blue-500 transition-colors duration-200"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      <span>Edit</span>
+                    </button>
+
+                    <button
+                      onClick={() => onDelete(comment._id)}
+                      className="flex items-center space-x-1 text-sm text-gray-500 hover:text-red-500 transition-colors duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete</span>
+                    </button>
+                  </>
                 )}
+
+              {comment.replies?.length > 0 && (
+                <button
+                  onClick={handleLoadReplies}
+                  className="flex items-center space-x-1 text-sm text-gray-500 hover:text-blue-500 transition-colors duration-200"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>{comment.replies.length} replies</span>
+                  {showReplies ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              )}
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
+
+      {showReplyForm && (
+        <div className="ml-14">
+          <Reply comment={comment} onReplySubmit={handleReplySubmit} />
+        </div>
+      )}
+
+      {showReplies && replies.length > 0 && (
+        <div className="ml-14 space-y-3">
+          {replies.map((reply) => (
+            <Comment
+              key={reply._id}
+              comment={reply}
+              onLike={onLike}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

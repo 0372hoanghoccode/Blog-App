@@ -116,3 +116,53 @@ export const getPostComments = async (req, res, next) => {
       next(error);
     }
   };
+
+  export const createreply = async (req, res, next) => {
+    try {
+      const { content, postId, userId, parentId } = req.body;
+
+      if (userId !== req.user.id) {
+        return next(
+          errorHandler(403, "You are not allowed to create this reply")
+        );
+      }
+
+      const parentComment = await Comment.findById(parentId);
+      if (!parentComment) {
+        return next(errorHandler(404, "Parent comment not found"));
+      }
+
+      const newReply = new Comment({
+        content,
+        postId,
+        userId,
+        parentId,
+      });
+
+      await newReply.save();
+
+      parentComment.replies.push(newReply._id);
+      await parentComment.save();
+
+      res.status(200).json(newReply);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export const getcommentreplies = async (req, res, next) => {
+    try {
+      const comment = await Comment.findById(req.params.commentId).populate({
+        path: "replies",
+        options: { sort: { createdAt: -1 } },
+      });
+
+      if (!comment) {
+        return next(errorHandler(404, "Comment not found"));
+      }
+
+      res.status(200).json(comment.replies);
+    } catch (error) {
+      next(error);
+    }
+  };
