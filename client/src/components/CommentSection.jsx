@@ -72,11 +72,11 @@ export default function CommentSection({ postId }) {
   const handleLike = async (commentId) => {
     try {
       if (!currentUser) {
-        navigate('/sign-in');
+        navigate("/sign-in");
         return;
       }
       const res = await fetch(`/api/comment/likeComment/${commentId}`, {
-        method: 'PUT',
+        method: "PUT",
       });
       if (res.ok) {
         const data = await res.json();
@@ -87,6 +87,40 @@ export default function CommentSection({ postId }) {
                   ...comment,
                   likes: data.likes,
                   numberOfLikes: data.likes.length,
+                  dislikes: data.dislikes,
+                  numberOfDislikes: data.dislikes.length,
+                  rank: data.rank,
+                }
+              : comment
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleDislike = async (commentId) => {
+    try {
+      if (!currentUser) {
+        navigate("/sign-in");
+        return;
+      }
+      const res = await fetch(`/api/comment/dislikeComment/${commentId}`, {
+        method: "PUT",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setComments(
+          comments.map((comment) =>
+            comment._id === commentId
+              ? {
+                  ...comment,
+                  likes: data.likes,
+                  numberOfLikes: data.likes.length,
+                  dislikes: data.dislikes,
+                  numberOfDislikes: data.dislikes.length,
+                  rank: data.rank,
                 }
               : comment
           )
@@ -109,14 +143,13 @@ export default function CommentSection({ postId }) {
     setShowModal(false);
     try {
       if (!currentUser) {
-        navigate('/sign-in');
+        navigate("/sign-in");
         return;
       }
       const res = await fetch(`/api/comment/deleteComment/${commentId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (res.ok) {
-        const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
@@ -181,6 +214,7 @@ export default function CommentSection({ postId }) {
           )}
         </form>
       )}
+
       {comments.length === 0 ? (
         <p className="text-sm my-5">No comments yet!</p>
       ) : (
@@ -196,6 +230,7 @@ export default function CommentSection({ postId }) {
               key={comment._id}
               comment={comment}
               onLike={handleLike}
+              onDislike={handleDislike}
               onEdit={handleEdit}
               onDelete={(commentId) => {
                 setShowModal(true);
@@ -205,10 +240,13 @@ export default function CommentSection({ postId }) {
           ))}
         </>
       )}
+
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-center">Delete Comment</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">
+              Delete Comment
+            </AlertDialogTitle>
             <div className="flex justify-center">
               <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200" />
             </div>

@@ -8,7 +8,8 @@ import {
     deleteComment,
     getcomments,
     createreply,
-    getcommentreplies
+    getcommentreplies,
+    dislikeComment
   } from '../controllers/comment.controller.js';
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.delete('/deleteComment/:commentId', verifyToken, deleteComment);
 router.get('/getcomments', verifyToken, getcomments);
 router.post("/reply", verifyToken, createreply);
 router.get("/replies/:commentId", getcommentreplies);
+router.put("/dislikeComment/:commentId", verifyToken, dislikeComment);
 
 export default router;

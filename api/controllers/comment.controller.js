@@ -21,23 +21,42 @@ export const createComment = async (req, res, next) => {
 };
 
 export const getPostComments = async (req, res, next) => {
-    try {
-      const comments = await Comment.find({ postId: req.params.postId }).sort({
+  try {
+    // chỉ lấy comment k có parentId (comment cha)
+    const comments = await Comment.find({
+      postId: req.params.postId,
+      parentId: null, 
+    })
+      .populate({
+        path: "replies",
+        options: { sort: { createdAt: -1 } },
+      })
+      .sort({
         createdAt: -1,
       });
-      res.status(200).json(comments);
-    } catch (error) {
-      next(error);
-    }
-  };
+
+    res.status(200).json(comments);
+  } catch (error) {
+    next(error);
+  }
+};
 
   export const likeComment = async (req, res, next) => {
     try {
       const comment = await Comment.findById(req.params.commentId);
       if (!comment) {
-        return next(errorHandler(404, 'Comment not found'));
+        return next(errorHandler(404, "Comment not found"));
       }
+
       const userIndex = comment.likes.indexOf(req.user.id);
+      const dislikeIndex = comment.dislikes.indexOf(req.user.id);
+
+      if (dislikeIndex !== -1) {
+        comment.numberOfDislikes -= 1;
+        comment.dislikes.splice(dislikeIndex, 1);
+      }
+
+      // Toggle like
       if (userIndex === -1) {
         comment.numberOfLikes += 1;
         comment.likes.push(req.user.id);
@@ -45,6 +64,39 @@ export const getPostComments = async (req, res, next) => {
         comment.numberOfLikes -= 1;
         comment.likes.splice(userIndex, 1);
       }
+
+      await comment.save();
+      res.status(200).json(comment);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  export const dislikeComment = async (req, res, next) => {
+    try {
+      const comment = await Comment.findById(req.params.commentId);
+      if (!comment) {
+        return next(errorHandler(404, "Comment not found"));
+      }
+
+      const dislikeIndex = comment.dislikes.indexOf(req.user.id);
+      const likeIndex = comment.likes.indexOf(req.user.id);
+
+      // Remove from likes if exists
+      if (likeIndex !== -1) {
+        comment.numberOfLikes -= 1;
+        comment.likes.splice(likeIndex, 1);
+      }
+
+      // Toggle dislike
+      if (dislikeIndex === -1) {
+        comment.numberOfDislikes += 1;
+        comment.dislikes.push(req.user.id);
+      } else {
+        comment.numberOfDislikes -= 1;
+        comment.dislikes.splice(dislikeIndex, 1);
+      }
+
       await comment.save();
       res.status(200).json(comment);
     } catch (error) {
