@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -87,7 +89,7 @@ export default function SignUp() {
         <Card className="shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-teal-500">
-              Create an Account
+              {t("createAccount")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -103,7 +105,10 @@ export default function SignUp() {
                     required
                     className="pl-10"
                   />
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <User
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -117,7 +122,10 @@ export default function SignUp() {
                     required
                     className="pl-10"
                   />
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
@@ -131,7 +139,10 @@ export default function SignUp() {
                     required
                     className="pl-10 pr-10"
                   />
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Lock
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                   <Button
                     type="button"
                     variant="ghost"
@@ -155,17 +166,20 @@ export default function SignUp() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
+                    {t("creatingAccount")}
                   </>
                 ) : (
-                  'Sign Up'
+                  t("createAccount")
                 )}
               </Button>
             </form>
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/sign-in" className="font-medium text-green-600 hover:text-green-500 transition-colors">
-                Sign In
+              {t("alreadyHaveAccount")}{" "}
+              <Link
+                to="/sign-in"
+                className="font-medium text-green-600 hover:text-green-500 transition-colors"
+              >
+                {t("signInHere")}
               </Link>
             </p>
           </CardContent>

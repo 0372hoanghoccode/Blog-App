@@ -1,12 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Github, Heart } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Facebook, Instagram, Twitter, Github } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 const FooterLink = ({ href, children, target, rel }) => (
-  <a 
-    href={href} 
-    target={target} 
+  <a
+    href={href}
+    target={target}
     rel={rel}
     className="text-muted-foreground hover:text-foreground transition-colors"
   >
@@ -19,8 +20,8 @@ const FooterTitle = ({ children }) => (
 );
 
 const SocialIcon = ({ href, icon: Icon }) => (
-  <a 
-    href={href} 
+  <a
+    href={href}
     className="text-muted-foreground hover:text-foreground transition-colors"
     target="_blank"
     rel="noopener noreferrer"
@@ -30,11 +31,12 @@ const SocialIcon = ({ href, icon: Icon }) => (
 );
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo Section */}
           <div className="md:col-span-4 lg:col-span-1">
             <Link
               to="/"
@@ -46,15 +48,13 @@ export default function Footer() {
               <span>Blog</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              Sharing knowledge, experiences, and passion in the world of technology and beyond.
+              {t("footerDescription")}
             </p>
           </div>
 
-          {/* Links Grid */}
           <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:col-span-3">
-            {/* About Section */}
             <div>
-              <FooterTitle>About</FooterTitle>
+              <FooterTitle>{t("about")}</FooterTitle>
               <ul className="mt-4 space-y-2">
                 <li>
                   <FooterLink
@@ -62,20 +62,17 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    50 projects 50 days
+                    {t("projects50")}
                   </FooterLink>
                 </li>
                 <li>
-                  <FooterLink href="/about">
-                    Hoàng Blog
-                  </FooterLink>
+                  <FooterLink href="/about">Hoàng Blog</FooterLink>
                 </li>
               </ul>
             </div>
 
-            {/* Follow Us Section */}
             <div>
-              <FooterTitle>Follow us</FooterTitle>
+              <FooterTitle>{t("followUs")}</FooterTitle>
               <ul className="mt-4 space-y-2">
                 <li>
                   <FooterLink
@@ -83,24 +80,23 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Github
+                    {t("socialLinks.github")}
                   </FooterLink>
                 </li>
                 <li>
-                  <FooterLink href="#">Discord</FooterLink>
+                  <FooterLink href="#">{t("socialLinks.discord")}</FooterLink>
                 </li>
               </ul>
             </div>
 
-            {/* Legal Section */}
             <div>
-              <FooterTitle>Legal</FooterTitle>
+              <FooterTitle>{t("legal")}</FooterTitle>
               <ul className="mt-4 space-y-2">
                 <li>
-                  <FooterLink href="#">Privacy Policy</FooterLink>
+                  <FooterLink href="#">{t("privacyPolicy")}</FooterLink>
                 </li>
                 <li>
-                  <FooterLink href="#">Terms &amp; Conditions</FooterLink>
+                  <FooterLink href="#">{t("termsConditions")}</FooterLink>
                 </li>
               </ul>
             </div>
@@ -109,25 +105,26 @@ export default function Footer() {
 
         <Separator className="my-8" />
 
-        {/* Bottom Section */}
         <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
           <div className="text-sm text-muted-foreground">
             © {new Date().getFullYear()}{" "}
             <a href="#" className="hover:underline">
               Hoàng blog™
             </a>
-            . All Rights Reserved.
+            . {t("allRightsReserved")}
           </div>
 
           <div className="flex items-center space-x-4">
             <SocialIcon href="#" icon={Facebook} />
             <SocialIcon href="#" icon={Instagram} />
             <SocialIcon href="#" icon={Twitter} />
-            <SocialIcon href="https://github.com/0372hoanghoccode" icon={Github} />
+            <SocialIcon
+              href="https://github.com/0372hoanghoccode"
+              icon={Github}
+            />
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

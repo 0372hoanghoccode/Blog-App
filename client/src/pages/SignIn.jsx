@@ -10,8 +10,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import OAuth from '../components/OAuth';
+import { useTranslation } from "react-i18next";
 
 export default function SignIn() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const { loading, error: errorMessage } = useSelector((state) => state.user);
@@ -61,13 +63,13 @@ export default function SignIn() {
         <Card className="shadow-xl">
           <CardHeader className="space-y-1">
             <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500">
-              Welcome Back
+              {t("welcomeBack")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <div className="relative">
                   <Input
                     type="email"
@@ -77,11 +79,14 @@ export default function SignIn() {
                     required
                     className="pl-10"
                   />
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <div className="relative">
                   <Input
                     type={showPassword ? "text" : "password"}
@@ -91,7 +96,10 @@ export default function SignIn() {
                     required
                     className="pl-10 pr-10"
                   />
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Lock
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
                   <Button
                     type="button"
                     variant="ghost"
@@ -115,10 +123,10 @@ export default function SignIn() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing In...
+                    {t("signingIn")}
                   </>
                 ) : (
-                  'Sign In'
+                  t("signInButton")
                 )}
               </Button>
             </form>
@@ -127,14 +135,19 @@ export default function SignIn() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-background px-2 text-muted-foreground">
+                  {t("orContinueWith")}
+                </span>
               </div>
             </div>
             <OAuth />
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link to="/sign-up" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                Sign Up
+              {t("dontHaveAccount")}{" "}
+              <Link
+                to="/sign-up"
+                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              >
+                {t("signUpHere")}
               </Link>
             </p>
           </CardContent>

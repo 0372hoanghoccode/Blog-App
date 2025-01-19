@@ -1,7 +1,6 @@
-// components/DashCategories.jsx
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Pencil, Trash2, PlusCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Pencil, Trash2, PlusCircle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -38,8 +37,8 @@ export default function DashCategories() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    description: ''
+    name: "",
+    description: "",
   });
   const [editingCategory, setEditingCategory] = useState(null);
   const [error, setError] = useState(null);
@@ -52,13 +51,13 @@ export default function DashCategories() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/category/get');
+      const res = await fetch("/api/category/get");
       const data = await res.json();
       if (res.ok) {
         setCategories(data);
       }
     } catch (error) {
-      setError('Error fetching categories');
+      setError("Error fetching categories");
     }
   };
 
@@ -67,10 +66,10 @@ export default function DashCategories() {
     setError(null);
 
     try {
-      const res = await fetch('/api/category/create', {
-        method: 'POST',
+      const res = await fetch("/api/category/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -81,7 +80,7 @@ export default function DashCategories() {
       }
 
       setCategories([...categories, data]);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: "", description: "" });
       setShowAddDialog(false);
     } catch (error) {
       setError(error.message);
@@ -94,9 +93,9 @@ export default function DashCategories() {
 
     try {
       const res = await fetch(`/api/category/update/${editingCategory._id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -106,10 +105,10 @@ export default function DashCategories() {
         throw new Error(data.message);
       }
 
-      setCategories(categories.map(cat => 
-        cat._id === editingCategory._id ? data : cat
-      ));
-      setFormData({ name: '', description: '' });
+      setCategories(
+        categories.map((cat) => (cat._id === editingCategory._id ? data : cat))
+      );
+      setFormData({ name: "", description: "" });
       setEditingCategory(null);
       setShowEditDialog(false);
     } catch (error) {
@@ -120,7 +119,7 @@ export default function DashCategories() {
   const handleDelete = async () => {
     try {
       const res = await fetch(`/api/category/delete/${categoryToDelete._id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!res.ok) {
@@ -128,7 +127,9 @@ export default function DashCategories() {
         throw new Error(data.message);
       }
 
-      setCategories(categories.filter(cat => cat._id !== categoryToDelete._id));
+      setCategories(
+        categories.filter((cat) => cat._id !== categoryToDelete._id)
+      );
       setShowDeleteModal(false);
       setCategoryToDelete(null);
     } catch (error) {
@@ -162,20 +163,26 @@ export default function DashCategories() {
               <Input
                 placeholder="Category Name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
               <Textarea
                 placeholder="Description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
               />
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <Button type="submit" className="w-full">Add Category</Button>
+              <Button type="submit" className="w-full">
+                Add Category
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -187,7 +194,9 @@ export default function DashCategories() {
             <TableRow className="bg-gray-50">
               <TableHead className="w-[250px]">Name</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead className="w-[150px]">Posts</TableHead>
+              <TableHead className="w-[150px]">Slug</TableHead>
+              <TableHead className="w-[200px]">Created At</TableHead>
+              <TableHead className="w-[200px]">Updated At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -196,7 +205,13 @@ export default function DashCategories() {
               <TableRow key={category._id}>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell>{category.description}</TableCell>
-                <TableCell>{/* Add post count here if needed */}</TableCell>
+                <TableCell>{category.slug}</TableCell>
+                <TableCell>
+                  {new Date(category.createdAt).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(category.updatedAt).toLocaleString()}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-2">
                     <Button
@@ -206,7 +221,7 @@ export default function DashCategories() {
                         setEditingCategory(category);
                         setFormData({
                           name: category.name,
-                          description: category.description
+                          description: category.description,
                         });
                         setShowEditDialog(true);
                       }}
@@ -233,7 +248,6 @@ export default function DashCategories() {
         </Table>
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent>
           <DialogHeader>
@@ -243,38 +257,46 @@ export default function DashCategories() {
             <Input
               placeholder="Category Name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               required
             />
             <Textarea
               placeholder="Description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
             />
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full">Update Category</Button>
+            <Button type="submit" className="w-full">
+              Update Category
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Category</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this category? This action cannot be undone.
+              Are you sure you want to delete this category? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               Delete
             </AlertDialogAction>
