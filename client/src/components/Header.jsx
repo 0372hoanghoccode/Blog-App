@@ -208,7 +208,7 @@ export default function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard?tab=profile" className="w-full">
-                      Profile
+                     {t("profile")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
