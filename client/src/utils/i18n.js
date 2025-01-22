@@ -33,27 +33,41 @@ const resources = {
       confirm: "Confirm",
       cancel: "Cancel",
 
-        // Sign In Page
-        welcomeBack: "Welcome Back",
-        email: "Email",
-        password: "Password",
-        signInButton: "Sign In",
-        signingIn: "Signing in...",
-        orContinueWith: "Or continue with",
-        dontHaveAccount: "Don't have an account?",
-        signUpHere: "Sign up here",
-        pleaseFillAllFields: "Please fill all fields",
+      // Sign In Page
+      welcomeBack: "Welcome Back",
+      email: "Email",
+      password: "Password",
+      signInButton: "Sign In",
+      signingIn: "Signing in...",
+      orContinueWith: "Or continue with",
+      dontHaveAccount: "Don't have an account?",
+      signUpHere: "Sign up here",
+      pleaseFillAllFields: "Please fill all fields",
 
-        // Sign Up Page
-        createAccount: "Create Account",
-        username: "Username",
-        email: "Email",
-        password: "Password",
-        creatingAccount: "Creating account...",
-        alreadyHaveAccount: "Already have an account?",
-        signInHere: "Sign in here",
-        pleaseFillAllFields: "Please fill all fields",
-        registrationFailed: "Account created successfully but auto sign-in failed. Please sign in manually.",
+      // Sign Up Page
+      createAccount: "Create Account",
+      username: "Username",
+      email: "Email",
+      password: "Password",
+      creatingAccount: "Creating account...",
+      alreadyHaveAccount: "Already have an account?",
+      signInHere: "Sign in here",
+      pleaseFillAllFields: "Please fill all fields",
+      registrationFailed:
+        "Account created successfully but auto sign-in failed. Please sign in manually.",
+
+      //About
+      about: "About",
+      programmingJourney: "Programming Journey",
+      footballAnalytics: "Football Analytics",
+      codingAndFootball: "Coding & Football Enthusiast",
+      craftingDigitalExperiences:
+        "Crafting digital experiences & analyzing the beautiful game",
+      passionateDeveloper:
+        "Passionate developer focused on creating elegant solutions and modern web applications.",
+      footballAnalysis:
+        "Combining technical expertise with football analysis. Breaking down tactics, statistics, and the evolution of modern football.",
+      connectMessage: "Let's connect and discuss programming or football!",
 
       // Footer
       footerDescription:
@@ -116,15 +130,29 @@ const resources = {
       pleaseFillAllFields: "Vui lòng điền tất cả các trường",
 
       // Sign Up Page
-    createAccount: "Tạo tài khoản",
-    username: "Tên người dùng",
-    email: "Email",
-    password: "Mật khẩu",
-    creatingAccount: "Đang tạo tài khoản...",
-    alreadyHaveAccount: "Đã có tài khoản?",
-    signInHere: "Đăng nhập tại đây",
-    pleaseFillAllFields: "Vui lòng điền tất cả các trường",
-    registrationFailed: "Tạo tài khoản thành công nhưng tự động đăng nhập thất bại. Vui lòng đăng nhập thủ công.",
+      createAccount: "Tạo tài khoản",
+      username: "Tên người dùng",
+      email: "Email",
+      password: "Mật khẩu",
+      creatingAccount: "Đang tạo tài khoản...",
+      alreadyHaveAccount: "Đã có tài khoản?",
+      signInHere: "Đăng nhập tại đây",
+      pleaseFillAllFields: "Vui lòng điền tất cả các trường",
+      registrationFailed:
+        "Tạo tài khoản thành công nhưng tự động đăng nhập thất bại. Vui lòng đăng nhập thủ công.",
+      
+      //About
+      about: "Giới thiệu",
+      programmingJourney: "Hành trình lập trình",
+      footballAnalytics: "Phân tích bóng đá",
+      codingAndFootball: "Đam mê lập trình & bóng đá",
+      craftingDigitalExperiences:
+        "Tạo ra trải nghiệm kỹ thuật số & phân tích môn thể thao vua",
+      passionateDeveloper:
+        "Nhà phát triển đam mê tạo ra giải pháp tinh tế và ứng dụng web hiện đại.",
+      footballAnalysis:
+        "Kết hợp chuyên môn kỹ thuật với phân tích bóng đá. Phân tích chiến thuật, thống kê và sự phát triển của bóng đá hiện đại.",
+      connectMessage: "Kết nối và cùng thảo luận về lập trình hoặc bóng đá!",
 
       // Footer
       footerDescription:

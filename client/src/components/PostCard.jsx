@@ -31,7 +31,9 @@ export default function PostCard({ post }) {
       </Link>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <Badge variant="secondary">{post.category}</Badge>
+          <Badge variant="secondary">
+            {post.category?.name || 'Uncategorized'}
+          </Badge>
         </div>
         <h3 className="text-lg font-semibold line-clamp-2 mb-2">{post.title}</h3>
         <div className="text-sm text-muted-foreground line-clamp-3">
@@ -48,4 +50,3 @@ export default function PostCard({ post }) {
     </Card>
   );
 }
-
