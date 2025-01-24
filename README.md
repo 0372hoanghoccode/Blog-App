@@ -35,29 +35,3 @@ A full-stack blogging application built with the MERN stack (MongoDB, Express, R
 **Auth**  
 ![JWT](https://img.shields.io/badge/JWT-9.0-orange)
 ![Google_OAuth](https://img.shields.io/badge/Google_OAuth-2.0-blue)
-
-## 🚀 Installation
-
-1. **Clone repository**
-   ```bash
-   git clone https://github.com/yourusername/mern-blog.git  https://github.com/0372hoanghoccode/Blog-App.git
-   cd Blog-App
-2. Install dependencies
-   # Server
-   npm install
-   # Client
-   cd client && npm install
-3.Environment Setup
-   # Server .env
-   MONGO_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   CLOUDINARY_CLOUD_NAME=your_cloud_name
-   CLOUDINARY_API_KEY=your_api_key
-   CLOUDINARY_API_SECRET=your_api_secret
-   # Client .env
-   VITE_FIREBASE_API_KEY=your_api_key
-4.Run the application
-   # Start server
-   npm run dev
-   # In separate terminal (from client directory)
-   npm run dev
