@@ -30,7 +30,7 @@ A full-stack blogging application built with the MERN stack (MongoDB, Express, R
 ![Redux](https://img.shields.io/badge/Redux_Toolkit-2.5-purple)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4)
 ![ShadCN](https://img.shields.io/badge/ShadCN-Components-orange)
-![Framer_Motion](https://img.shields.io/badge/Framer_Motion-10.12.0-FF007F)
+![Framer_Motion](https://img.shields.io/badge/Framer_Motion-11.17.0-FF007F)
 
 **Auth**  
 ![JWT](https://img.shields.io/badge/JWT-9.0-orange)
