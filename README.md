@@ -45,19 +45,19 @@ A full-stack blogging application built with the MERN stack (MongoDB, Express, R
 2. Install dependencies
    # Server
    npm install
-  # Client
-  cd client && npm install
+   # Client
+   cd client && npm install
 3.Environment Setup
-  # Server .env
-  MONGO_URI=your_mongodb_uri
-  JWT_SECRET=your_jwt_secret
-  CLOUDINARY_CLOUD_NAME=your_cloud_name
-  CLOUDINARY_API_KEY=your_api_key
-  CLOUDINARY_API_SECRET=your_api_secret
-  # Client .env
-  VITE_FIREBASE_API_KEY=your_api_key
+   # Server .env
+   MONGO_URI=your_mongodb_uri
+   JWT_SECRET=your_jwt_secret
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   # Client .env
+   VITE_FIREBASE_API_KEY=your_api_key
 4.Run the application
-  # Start server
-  npm run dev
-  # In separate terminal (from client directory)
-  npm run dev
+   # Start server
+   npm run dev
+   # In separate terminal (from client directory)
+   npm run dev
