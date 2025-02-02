@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   HiAnnotation,
   HiArrowNarrowUp,
   HiDocumentText,
   HiOutlineUserGroup,
-} from 'react-icons/hi';
+} from "react-icons/hi";
 import {
   Table,
   TableBody,
@@ -33,7 +33,7 @@ export default function DashboardComp() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('/api/user/getusers?limit=5');
+        const res = await fetch("/api/user/getusers?limit=5");
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -47,7 +47,7 @@ export default function DashboardComp() {
 
     const fetchPosts = async () => {
       try {
-        const res = await fetch('/api/post/getposts?limit=5');
+        const res = await fetch("/api/post/getposts?limit=5");
         const data = await res.json();
         if (res.ok) {
           setPosts(data.posts);
@@ -61,7 +61,7 @@ export default function DashboardComp() {
 
     const fetchComments = async () => {
       try {
-        const res = await fetch('/api/comment/getcomments?limit=5');
+        const res = await fetch("/api/comment/getcomments?limit=5");
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
@@ -167,7 +167,9 @@ export default function DashboardComp() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Comments</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Recent Comments
+            </CardTitle>
             <Button variant="outline" asChild>
               <Link to="/dashboard?tab=comments">See all</Link>
             </Button>
@@ -223,7 +225,12 @@ export default function DashboardComp() {
                     <TableCell className="max-w-[200px]">
                       <p className="truncate">{post.title}</p>
                     </TableCell>
-                    <TableCell>{post.category}</TableCell>
+                    <TableCell>
+                      {typeof post.category === "object" &&
+                      post.category !== null
+                        ? post.category.name
+                        : post.category}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
