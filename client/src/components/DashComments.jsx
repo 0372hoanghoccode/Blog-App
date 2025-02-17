@@ -90,35 +90,64 @@ export default function DashComments() {
   };
 
   if (!currentUser.isAdmin) {
-    return <div className="p-4 text-center text-gray-500">You don't have permission to view this page.</div>;
+    return (
+      <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+        You don't have permission to view this page.
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-light text-gray-800">Comment Management</h1>
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-100">
+      <h1 className="text-3xl font-light text-slate-800 dark:text-slate-200">
+        Comment Management
+      </h1>
+      <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
         <ScrollArea className="h-[600px]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[100px] text-gray-600 font-normal">Date Updated</TableHead>
-                <TableHead className="text-gray-600 font-normal">Comment</TableHead>
-                <TableHead className="text-gray-600 font-normal">Likes</TableHead>
-                <TableHead className="text-gray-600 font-normal">Post</TableHead>
-                <TableHead className="text-gray-600 font-normal">User</TableHead>
-                <TableHead className="text-right text-gray-600 font-normal">Actions</TableHead>
+              <TableRow className="bg-slate-50 dark:bg-slate-800/50">
+                <TableHead className="w-[100px] text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  Date Updated
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  Comment
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  Likes
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  Post
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  User
+                </TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {comments.map((comment) => (
-                <TableRow key={comment._id} className="hover:bg-gray-50 transition-colors duration-200">
-                  <TableCell className="text-gray-700">
+                <TableRow
+                  key={comment._id}
+                  className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                >
+                  <TableCell className="py-3 text-sm text-slate-700 dark:text-slate-300">
                     {new Date(comment.updatedAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="max-w-xs truncate text-gray-700">{comment.content}</TableCell>
-                  <TableCell className="text-gray-700">{comment.numberOfLikes}</TableCell>
-                  <TableCell className="max-w-xs truncate text-gray-700">{comment.postId}</TableCell>
-                  <TableCell className="max-w-xs truncate text-gray-700">{comment.userId}</TableCell>
+                  <TableCell className="py-3 text-sm max-w-xs truncate text-slate-700 dark:text-slate-300">
+                    {comment.content}
+                  </TableCell>
+                  <TableCell className="py-3 text-sm text-slate-700 dark:text-slate-300">
+                    {comment.numberOfLikes}
+                  </TableCell>
+                  <TableCell className="py-3 text-sm max-w-xs truncate text-slate-700 dark:text-slate-300">
+                    {comment.postId}
+                  </TableCell>
+                  <TableCell className="py-3 text-sm max-w-xs truncate text-slate-700 dark:text-slate-300">
+                    {comment.userId}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
@@ -127,7 +156,7 @@ export default function DashComments() {
                         setShowModal(true);
                         setCommentIdToDelete(comment._id);
                       }}
-                      className="text-gray-600 hover:text-red-600 transition-colors duration-200"
+                      className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-500 transition-colors duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -142,23 +171,30 @@ export default function DashComments() {
         <Button
           onClick={handleShowMore}
           variant="ghost"
-          className="w-full text-gray-600 hover:text-teal-600 transition-colors duration-200"
+          className="w-full text-slate-600 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-500 transition-colors duration-200"
         >
           Show more
         </Button>
       )}
 
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
-        <AlertDialogContent className="bg-white rounded-lg shadow-lg">
+        <AlertDialogContent className="bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-800 text-xl font-light">Delete Comment</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogTitle className="text-slate-800 dark:text-slate-200 text-xl font-light">
+              Delete Comment
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
               Are you sure you want to delete this comment? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors duration-200">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteComment} className="bg-red-500 hover:bg-red-600 text-white transition-colors duration-200">
+            <AlertDialogCancel className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteComment}
+              className="bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

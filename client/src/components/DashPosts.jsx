@@ -108,7 +108,11 @@ export default function DashPosts() {
   };
 
   if (!currentUser.isAdmin) {
-    return <div className="p-4 text-center text-gray-500">You don't have permission to view this page.</div>;
+    return (
+      <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+        You don't have permission to view this page.
+      </div>
+    );
   }
 
   const getCategoryName = (categoryId) => {
@@ -116,66 +120,88 @@ export default function DashPosts() {
     return category ? category.name : 'Uncategorized';
   };
 
-  return (
+   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-light text-gray-800">Manage Posts</h1>
+        <h1 className="text-3xl font-light text-slate-800 dark:text-slate-200">
+          Manage Posts
+        </h1>
         <Link to="/create-post">
-          <Button className="bg-teal-500 hover:bg-teal-600 text-white transition-colors duration-300">
+          <Button className="bg-teal-500 hover:bg-teal-600 text-white transition-colors duration-200">
             <PlusCircle className="mr-2 h-4 w-4" /> Create New Post
           </Button>
         </Link>
       </div>
 
       {userPosts.length > 0 ? (
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-100">
+        <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
           <ScrollArea className="h-[600px]">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[180px] text-gray-600 font-normal">Date Updated</TableHead>
-                  <TableHead className="text-gray-600 font-normal">Post Image</TableHead>
-                  <TableHead className="text-gray-600 font-normal">Title</TableHead>
-                  <TableHead className="text-gray-600 font-normal">Category</TableHead>
-                  <TableHead className="text-right text-gray-600 font-normal">Actions</TableHead>
+                <TableRow className="bg-slate-50 dark:bg-slate-800/50">
+                  <TableHead className="w-[180px] text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                    Date Updated
+                  </TableHead>+
+                  <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                    Post Image
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                    Title
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                    Category
+                  </TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {userPosts.map((post) => (
-                  <TableRow key={post._id} className="hover:bg-gray-50 transition-colors duration-200">
-                    <TableCell className="text-gray-700">
+                  <TableRow
+                    key={post._id}
+                    className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  >
+                    <TableCell className="py-3 text-sm text-slate-700 dark:text-slate-300">
                       {new Date(post.updatedAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                       })}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-3">
                       <Link to={`/post/${post.slug}`}>
                         <img
                           src={post.image}
                           alt={post.title}
-                          className="w-20 h-12 object-cover rounded-md transition-transform duration-300 hover:scale-105"
+                          className="w-20 h-12 object-cover rounded-md transition-transform duration-200 hover:scale-105"
                         />
                       </Link>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-3">
                       <Link
-                        className="font-medium text-teal-600 hover:text-teal-800 transition-colors duration-200"
+                        className="text-sm font-medium text-teal-600 dark:text-teal-500 hover:text-teal-700 dark:hover:text-teal-400 transition-colors duration-200"
                         to={`/post/${post.slug}`}
                       >
                         {post.title}
                       </Link>
                     </TableCell>
-                    <TableCell>
-        <Badge variant="secondary" className="bg-teal-50 text-teal-700 px-2 py-1 rounded-full text-xs">
-          {getCategoryName(post.category)}
-        </Badge>
-      </TableCell>
+                    <TableCell className="py-3">
+                      <Badge
+                        variant="secondary"
+                        className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 px-2 py-1 rounded-full text-xs font-medium"
+                      >
+                        {getCategoryName(post.category)}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Link to={`/update-post/${post._id}`}>
-                          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-teal-600 transition-colors duration-200">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-600 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-500 transition-colors duration-200"
+                          >
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </Link>
@@ -186,7 +212,7 @@ export default function DashPosts() {
                             setShowModal(true);
                             setPostIdToDelete(post._id);
                           }}
-                          className="text-gray-600 hover:text-red-600 transition-colors duration-200"
+                          className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-500 transition-colors duration-200"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -198,11 +224,11 @@ export default function DashPosts() {
             </Table>
           </ScrollArea>
           {showMore && (
-            <div className="p-4 bg-gray-50 border-t border-gray-100">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800">
               <Button
                 variant="ghost"
                 onClick={handleShowMore}
-                className="w-full text-gray-600 hover:text-teal-600 transition-colors duration-200"
+                className="w-full text-slate-600 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-500 transition-colors duration-200"
               >
                 Show More <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
@@ -210,24 +236,31 @@ export default function DashPosts() {
           )}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white shadow-sm rounded-lg border border-gray-100">
-          <p className="text-gray-600 text-lg">You have no posts yet.</p>
+        <div className="text-center py-16 bg-white dark:bg-slate-900 shadow-sm rounded-lg border border-slate-200 dark:border-slate-800">
+          <p className="text-slate-600 dark:text-slate-400 text-lg">
+            You have no posts yet.
+          </p>
         </div>
       )}
 
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
-        <AlertDialogContent className="bg-white rounded-lg shadow-lg">
+        <AlertDialogContent className="bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-800 text-xl font-light">
+            <AlertDialogTitle className="text-slate-800 dark:text-slate-200 text-xl font-light">
               Delete Post
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600">
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
               Are you sure you want to delete this post? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors duration-200">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeletePost} className="bg-red-500 hover:bg-red-600 text-white transition-colors duration-200">
+            <AlertDialogCancel className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeletePost}
+              className="bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

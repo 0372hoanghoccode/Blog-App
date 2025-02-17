@@ -83,28 +83,28 @@ export default function DashUsers() {
   };
 
   if (!currentUser.isAdmin) {
-    return <div className="p-4 text-center text-gray-500">You don't have permission to view this page.</div>;
+    return <div className="p-4 text-center text-slate-500 dark:text-slate-400">You don't have permission to view this page.</div>;
   }
 
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-light text-gray-800">User Management</h1>
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-100">
+      <h1 className="text-3xl font-light text-slate-800 dark:text-slate-200">User Management</h1>
+      <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
         <ScrollArea className="h-[600px]">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[100px] text-gray-600 font-normal">Date created</TableHead>
-                <TableHead className="text-gray-600 font-normal">User</TableHead>
-                <TableHead className="text-gray-600 font-normal">Email</TableHead>
-                <TableHead className="text-center text-gray-600 font-normal">Admin</TableHead>
-                <TableHead className="text-right text-gray-600 font-normal">Actions</TableHead>
+              <TableRow className="bg-slate-50 dark:bg-slate-800/50">
+                <TableHead className="w-[100px] text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Date created</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">User</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Email</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Admin</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map((user) => (
-                <TableRow key={user._id} className="hover:bg-gray-50 transition-colors duration-200">
-                  <TableCell className="text-gray-700">
+                <TableRow key={user._id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+                  <TableCell className="py-3 text-sm text-slate-700 dark:text-slate-300">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="flex items-center space-x-2">
@@ -113,21 +113,21 @@ export default function DashUsers() {
                       alt={user.username}
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="text-gray-700">{user.username}</span>
+                    <span className="text-gray-700 dark:text-slate-300">{user.username}</span>
                   </TableCell>
-                  <TableCell className="text-gray-700">{user.email}</TableCell>
+                  <TableCell className="text-gray-700 dark:text-slate-300">{user.email}</TableCell>
                   <TableCell className="text-center">
                     {user.isAdmin ? (
-                      <Check className="text-teal-500 inline h-5 w-5" />
+                      <Check className="text-teal-500 inline h-5 w-5 dark:text-slate-300" />
                     ) : (
-                      <X className="text-gray-400 inline h-5 w-5" />
+                      <X className="text-gray-400 inline h-5 w-5 dark:text-slate-300" />
                     )}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-gray-600 hover:text-teal-600 transition-colors duration-200"
+                      className="text-gray-600 hover:text-teal-600 transition-colors duration-200 dark:text-slate-300 dark:hover:text-teal-500"
                       onClick={() => {
                         // View user details functionality
                       }}
@@ -141,7 +141,7 @@ export default function DashUsers() {
                         setShowModal(true);
                         setUserIdToDelete(user._id);
                       }}
-                      className="text-gray-600 hover:text-red-600 transition-colors duration-200"
+                      className="text-gray-600 hover:text-red-600 transition-colors duration-200 dark:text-slate-300 dark:hover:text-red-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -156,7 +156,7 @@ export default function DashUsers() {
         <Button
           onClick={handleShowMore}
           variant="ghost"
-          className="w-full text-gray-600 hover:text-teal-600 transition-colors duration-200"
+          className="w-full text-gray-600 hover:text-teal-600 transition-colors duration-200 dark:text-slate-300 dark:hover:text-teal-500"
         >
           Show more
         </Button>
@@ -165,7 +165,7 @@ export default function DashUsers() {
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
         <AlertDialogContent className="bg-white rounded-lg shadow-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-800 text-xl font-light">Delete User</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-800 text-xl font-light dark:text-slate-300">Delete User</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600">
               Are you sure you want to delete this user? This action cannot be undone.
             </AlertDialogDescription>
