@@ -98,7 +98,7 @@ export default function DashUsers() {
                 <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">User</TableHead>
                 <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Email</TableHead>
                 <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Admin</TableHead>
-                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300">Actions</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-600 dark:text-slate-300 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

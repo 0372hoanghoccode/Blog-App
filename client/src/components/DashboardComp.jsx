@@ -227,7 +227,7 @@ export default function DashboardComp() {
                     </TableCell>
                     <TableCell>
                       {typeof post.category === "object" &&
-                      post.category !== null
+                        post.category !== null
                         ? post.category.name
                         : post.category}
                     </TableCell>

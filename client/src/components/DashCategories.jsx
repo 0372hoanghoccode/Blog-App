@@ -148,7 +148,7 @@ export default function DashCategories() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-light text-gray-800">Manage Categories</h1>
+        <h1 className="text-3xl font-light text-slate-800 dark:text-slate-200">Manage Categories</h1>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button className="bg-teal-500 hover:bg-teal-600 text-white">
@@ -188,7 +188,7 @@ export default function DashCategories() {
         </Dialog>
       </div>
 
-       <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 shadow-sm rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50 dark:bg-slate-800/50">
